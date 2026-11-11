@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: health-alert-backend
+
+# WhatsApp Cloud API.
+# Keep secrets in environment variables; never commit access tokens.
+whatsapp:
+  enabled: ${WHATSAPP_ENABLED:false}
+  api:
+    base-url: https://graph.facebook.com
+    # Set this to the Graph API version shown in your Meta developer dashboard.
+    version: ${WHATSAPP_API_VERSION:}
+  phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
+  access-token: ${WHATSAPP_ACCESS_TOKEN:}
+  # For initial Meta test-number testing, use hello_world / en_US.
+  template-name: ${WHATSAPP_TEMPLATE_NAME:hello_world}
+  template-language: ${WHATSAPP_TEMPLATE_LANGUAGE:en_US}
+  # false for hello_world; true only when using the approved 5-variable
+  # Health Guardian template described in the project README.
+  template-body-parameters-enabled: ${WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED:false}
