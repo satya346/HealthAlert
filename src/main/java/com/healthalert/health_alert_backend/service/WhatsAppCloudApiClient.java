@@ -76,8 +76,11 @@ public class WhatsAppCloudApiClient {
             parameters.add(textParameter(contactName));
             parameters.add(textParameter(patientName));
             parameters.add(textParameter(String.valueOf(bpm)));
-            parameters.add(textParameter(alertType == AlertType.HIGH
-                    ? "High heart rate" : "Low heart rate"));
+            parameters.add(textParameter(switch (alertType) {
+                case HIGH -> "High heart rate";
+                case LOW -> "Low heart rate";
+                case TEST -> "TEST SOS - NOT A REAL EMERGENCY";
+            }));
             parameters.add(textParameter(recordedAt));
 
             template.put("components", List.of(
