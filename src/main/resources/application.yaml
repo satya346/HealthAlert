@@ -5,16 +5,17 @@ spring:
 # WhatsApp Cloud API.
 # Keep secrets in environment variables; never commit access tokens.
 whatsapp:
-  enabled: ${WHATSAPP_ENABLED:false}
+  enabled: ${WHATSAPP_ENABLED:true}
   api:
     base-url: https://graph.facebook.com
     # Set this to the Graph API version shown in your Meta developer dashboard.
-    version: ${WHATSAPP_API_VERSION:}
-  phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:}
-  access-token: ${WHATSAPP_ACCESS_TOKEN:}
-  # For initial Meta test-number testing, use hello_world / en_US.
-  template-name: ${WHATSAPP_TEMPLATE_NAME:hello_world}
-  template-language: ${WHATSAPP_TEMPLATE_LANGUAGE:en_US}
-  # false for hello_world; true only when using the approved 5-variable
-  # Health Guardian template described in the project README.
-  template-body-parameters-enabled: ${WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED:false}
+      # Set this to the Graph API version shown in your Meta developer dashboard.
+    version: ${WHATSAPP_API_VERSION:v25.0}
+  phone-number-id: ${WHATSAPP_PHONE_NUMBER_ID:1465832026613463}
+  access-token: ${WHATSAPP_ACCESS_TOKEN:EAAkXAx2ExCYBSwjFFJfGY4uro7YRiPSItsJbA6l77ZBnoT9w9CjeZAI8C4ZCBYBjd8MAtFbwyneY7WNhh5r6sjq54lbHqNMdUWzmjG3ywio0U8Txs2jq1xYGDPY9zPcIqZAy3Aw68yYgwg8HqiuO2LWDaugFXLCZAQctkfVgcwLM15XplFeFZAENCXPSIZB6ZA59hnS4OFZAoI2fgZBgwoEZA5SOJoHhm7ZCz6qvS3p0ZC5PZB3basNWAj0nXEZBl4xWn1yJCDQoQ1vdrfYnH6eCpp1g5AVYG5N}
+  # Matches the currently approved Health Guardian template shown in WhatsApp Manager.
+  # It has a static TEXT header and exactly two BODY variables: patient name, recorded time.
+  template-name: ${WHATSAPP_TEMPLATE_NAME:health_guardian_emergency}
+  template-language: ${WHATSAPP_TEMPLATE_LANGUAGE:en}
+  # Enable the two BODY parameters required by health_guardian_emergency.
+  template-body-parameters-enabled: ${WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED:true}

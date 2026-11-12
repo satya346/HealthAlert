@@ -51,7 +51,10 @@ public class EmergencyAlertService {
                         patientName,
                         request.bpm(),
                         request.alertType(),
-                        recordedAt
+                        recordedAt,
+                        request.latitude(),
+                        request.longitude(),
+                        request.locationAccuracyMeters()
                 );
                 accepted++;
             } catch (Exception ex) {

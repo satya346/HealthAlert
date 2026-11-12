@@ -12,9 +12,9 @@ Do not put the access token in source control or in the Android app. Set these e
 | `WHATSAPP_API_VERSION` | Graph API version shown in Meta for Developers, e.g. `vXX.0` |
 | `WHATSAPP_PHONE_NUMBER_ID` | Phone Number ID from WhatsApp > API Setup (not the displayed test phone number) |
 | `WHATSAPP_ACCESS_TOKEN` | Meta access token |
-| `WHATSAPP_TEMPLATE_NAME` | `hello_world` for the initial test |
-| `WHATSAPP_TEMPLATE_LANGUAGE` | `en_US` for the initial test |
-| `WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED` | `false` for `hello_world` |
+| `WHATSAPP_TEMPLATE_NAME` | `health_guardian_emergency` for the currently approved Health Guardian template |
+| `WHATSAPP_TEMPLATE_LANGUAGE` | `en` (confirm the exact language code for this template in Meta) |
+| `WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED` | `true` for the two approved body variables |
 
 Replace `vXX.0` with the actual version displayed by Meta. Do not copy the placeholder literally.
 
@@ -25,9 +25,9 @@ $env:WHATSAPP_ENABLED="true"
 $env:WHATSAPP_API_VERSION="vXX.0"
 $env:WHATSAPP_PHONE_NUMBER_ID="YOUR_PHONE_NUMBER_ID"
 $env:WHATSAPP_ACCESS_TOKEN="YOUR_ACCESS_TOKEN"
-$env:WHATSAPP_TEMPLATE_NAME="hello_world"
-$env:WHATSAPP_TEMPLATE_LANGUAGE="en_US"
-$env:WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED="false"
+$env:WHATSAPP_TEMPLATE_NAME="health_guardian_emergency"
+$env:WHATSAPP_TEMPLATE_LANGUAGE="en"
+$env:WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED="true"
 
 .\mvnw.cmd spring-boot:run
 ```
@@ -64,25 +64,18 @@ For Meta's `hello_world` test template, the backend sends the template without b
 
 A successful Graph API response means Meta accepted the message request. It does not guarantee delivery. Delivery status webhooks are a separate next step.
 
-## 3. Configure the Health Guardian template
+## 3. Currently approved Health Guardian template mapping
 
-After Meta approves your own template, set:
+The currently approved `health_guardian_emergency` template shown in WhatsApp Manager has:
+- Static TEXT header: `Health Alert` (do not send a header component)
+- Body `{{1}}`: patient name
+- Body `{{2}}`: recorded timestamp
+- Footer: `Health Alert – Automated Notification`
+- No URL button and no LOCATION header
 
-```powershell
-$env:WHATSAPP_TEMPLATE_NAME="health_alert"
-$env:WHATSAPP_TEMPLATE_LANGUAGE="en_US"
-$env:WHATSAPP_TEMPLATE_BODY_PARAMETERS_ENABLED="true"
-```
+The backend therefore sends exactly two BODY text parameters, in this order: patient name, recorded timestamp. It deliberately does not send a location header. Although Android may capture and submit GPS coordinates, this particular approved template has no location URL button, so the coordinates are omitted from the WhatsApp message until a suitable template is approved. Do not map coordinates into the timestamp variable.
 
-The implementation sends five body parameters in this order:
-
-1. Contact name
-2. Patient name
-3. Heart rate (BPM)
-4. Alert type (`High heart rate` or `Low heart rate`)
-5. Recorded timestamp
-
-Your approved Meta template must contain exactly five matching body placeholders (`{{1}}` through `{{5}}`) in that order. If the approved template differs, update the parameter mapping before enabling it.
+The template language configured in Render must match the exact language code shown by Meta for this template. The default in this package is `en`; if Meta's API details show a different code, use that exact value.
 
 ## 4. Important behavior and production checklist
 

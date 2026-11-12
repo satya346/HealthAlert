@@ -34,10 +34,10 @@ public class WhatsAppCloudApiClient {
             @Value("${whatsapp.api.version:}") String apiVersion,
             @Value("${whatsapp.phone-number-id:}") String phoneNumberId,
             @Value("${whatsapp.access-token:}") String accessToken,
-            @Value("${whatsapp.template-name:hello_world}") String templateName,
-            @Value("${whatsapp.template-language:en_US}") String templateLanguage,
+            @Value("${whatsapp.template-name:health_guardian_emergency}") String templateName,
+            @Value("${whatsapp.template-language:en}") String templateLanguage,
             @Value("${whatsapp.enabled:false}") boolean enabled,
-            @Value("${whatsapp.template-body-parameters-enabled:false}") boolean templateBodyParametersEnabled) {
+            @Value("${whatsapp.template-body-parameters-enabled:true}") boolean templateBodyParametersEnabled) {
 
         this.restClient = RestClient.builder()
                 .baseUrl(apiBaseUrl)
@@ -57,7 +57,7 @@ public class WhatsAppCloudApiClient {
             String patientName,
             int bpm,
             AlertType alertType,
-            String recordedAt) {
+            String recordedAt, Double latitude, Double longitude, Float accuracyMeters) {
 
         if (!enabled) {
             log.info("WhatsApp integration is disabled. Skipping recipient={}",
@@ -72,20 +72,22 @@ public class WhatsAppCloudApiClient {
         template.put("language", Map.of("code", templateLanguage));
 
         if (templateBodyParametersEnabled) {
+            // Matches the currently approved Meta template exactly:
+            // static TEXT header "Health Alert", body {{1}} = patient name,
+            // body {{2}} = alert timestamp. This template has no URL button
+            // and no LOCATION header, so coordinates must not be sent here.
             List<Map<String, String>> parameters = new ArrayList<>();
-            parameters.add(textParameter(contactName));
             parameters.add(textParameter(patientName));
-            parameters.add(textParameter(String.valueOf(bpm)));
-            parameters.add(textParameter(switch (alertType) {
-                case HIGH -> "High heart rate";
-                case LOW -> "Low heart rate";
-                case TEST -> "TEST SOS - NOT A REAL EMERGENCY";
-            }));
             parameters.add(textParameter(recordedAt));
+            template.put("components", List.of(Map.of(
+                    "type", "body",
+                    "parameters", parameters
+            )));
+        }
 
-            template.put("components", List.of(
-                    Map.of("type", "body", "parameters", parameters)
-            ));
+        if (latitude != null && longitude != null) {
+            log.info("Location was supplied for recipient={}, but template '{}' has no location header or URL button; omitting coordinates from WhatsApp payload",
+                    maskPhoneNumber(recipientPhoneNumber), templateName);
         }
 
         Map<String, Object> requestBody = Map.of(

@@ -23,6 +23,11 @@ public record EmergencyAlertRequest(
         // Optional fields. Existing Android requests remain compatible.
         String patientName,
 
-        String recordedAt
+        String recordedAt,
+        Double latitude,
+        Double longitude,
+        Float locationAccuracyMeters,
+        String locationCapturedAt,
+        Boolean locationAvailable
 ) {
 }
